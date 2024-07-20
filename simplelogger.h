@@ -25,7 +25,13 @@ namespace SimpleLogger {
         LOGMODE_GUI = 1 << 2
     };
     inline LogMode operator|(LogMode a, LogMode b) {
-        return static_cast<LogMode>(static_cast<int>(a) | static_cast<int>(b));
+        return a = static_cast<LogMode>(static_cast<int>(a) | static_cast<int>(b));
+    }
+    inline LogMode operator|=(LogMode& a, LogMode b) {
+        return a = static_cast<LogMode>(static_cast<int>(a) | static_cast<int>(b));
+    }
+    inline LogMode operator&=(LogMode& a, LogMode b) {
+        return a = static_cast<LogMode>(static_cast<int>(a) & static_cast<int>(b));
     }
 
     enum LogLevel {
