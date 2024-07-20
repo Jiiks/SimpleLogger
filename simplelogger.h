@@ -1,3 +1,4 @@
+// https://github.com/Jiiks/SimpleLogger
 #pragma once
 #include <Windows.h>
 #include <fstream>
@@ -20,9 +21,10 @@ namespace SimpleLogger {
 
 
     enum LogMode {
-        LOGMODE_CONSOLE = 1 << 0,
-        LOGMODE_FILE = 1 << 1,
-        LOGMODE_GUI = 1 << 2
+        LOGMODE_NONE = 1 << 0,
+        LOGMODE_CONSOLE = 1 << 1,
+        LOGMODE_FILE = 1 << 2,
+        LOGMODE_GUI = 1 << 3
     };
     inline LogMode operator|(LogMode a, LogMode b) {
         return a = static_cast<LogMode>(static_cast<int>(a) | static_cast<int>(b));
@@ -65,6 +67,12 @@ namespace SimpleLogger {
                 m_logger._Log(obj);
                 return (*this);
             }
+
+            //wchar_t specialization
+            LogE operator<<(const wchar_t* obj) {
+                m_logger._LogW(obj);
+                return LogE(*this);
+            }
         };
 
         static void Init(LogMode mode = LogMode::LOGMODE_CONSOLE, string prefix = "") {
@@ -100,6 +108,12 @@ namespace SimpleLogger {
         template <typename T>
         LogE operator<<(T const& obj) {
             this->_Log(obj);
+            return LogE(*this);
+        }
+
+        //wchar_t specialization
+        LogE operator<<(const wchar_t *obj) {
+            this->_LogW(obj);
             return LogE(*this);
         }
 
@@ -185,6 +199,15 @@ namespace SimpleLogger {
             }
             if(m_mode & (LogMode::LOGMODE_CONSOLE)) {
                 std::cout << obj << " ";
+            }
+        }
+
+        void _LogW(const wchar_t *obj) {
+            if(m_mode & (LogMode::LOGMODE_FILE)) {
+                fl << obj << " ";
+            }
+            if(m_mode & (LogMode::LOGMODE_CONSOLE)) {
+                std::wcout << obj << " ";
             }
         }
     };
